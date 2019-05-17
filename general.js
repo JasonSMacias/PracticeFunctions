@@ -11,7 +11,7 @@ const typedCommand = cliInput[2];
 const arg1 = cliInput[3];
 
 if (!typedCommand){
-  console.log("Please enter a function to run from the following list:\n hash\n lookup");
+  console.log("Please enter a function to run from the following list:\n hash");
   process.exit(1);
 };
 
@@ -19,14 +19,14 @@ if (!arg1) {
   console.log("Please enter a value to pass the function.");
   process.exit(1);
 }
-// Hashing function
+// Interactive hashing function
 
-  //function to return array index where input is to be placed, or found (this one only uses the first 100 indexes of the array strings are stored in, so it can be displayed to the screen and interacted with)
+  //function to return array index where input is to be placed, or found (this one only uses the first 200 indexes of the array strings are stored in, so it can be displayed to the screen and interacted with)
 
 function hashData(data) {
   let hashNum = stringHash(data);
-  // Array is limited to length of 20 for display purposes, hashNum can be used if not printed out, because array may end up being up to 2 to the 32 power
-  let slot = hashNum % 100;
+  // Array is limited to length of 200 for display purposes, hashNum can be used directly if not printed out 
+  let slot = hashNum % 200;
   return [hashNum, slot];
 }
 //  Setting up empty array to be added to, and read from
@@ -55,20 +55,35 @@ function inquireHash() {
       const hashed = hashData(toHash);
       console.log(`You want to: ${answers.action} ${toHash}`);
       if (answers.action === "Hash") {
-        console.log("Hash number" + hashed[0] + "\nTo be placed in array at index " + hashed[1]);
         if (retArr[hashed[1]]) {
-        retArr[hashed[1]].push(toHash);
+          //  This needs to be put in a loop to check all indexes of the array (could be more than 1)
+          if (retArr[hashed[1]] != toHash) {
+            retArr[hashed[1]].push(toHash);
+            console.log("Hash number" + hashed[0] + "\nTo be placed in array at index " + hashed[1]);
+          }
+          else {
+            console.log("That string already exists in the array.\n");
+          }
         }
         else {
           retArr[hashed[1]] = [toHash];
         }
         console.log("\n" + JSON.stringify(retArr));
-        inquireHash();
       }
       else if (answers.action === "Lookup") {
-        console.log("Lookup to be implemented later");
+        if (retArr[hashed[1]]) {
+          for (let i = 0; i < retArr[hashed[1]].length; i++) {
+            if (retArr[hashed[1]][i] === toHash) {
+              console.log(retArr[hashed[1]][i] === toHash ? `The string ${toHash} exists in this two-dimentional array at index [${hashed[1]}][${i}]` : "");
+            };
+          }
+        }
+        else {
+          console.log("That string does not exist in this array.");
+        }
       }
       else {process.exit(1)};
+      inquireHash();
     });
   
 };
@@ -77,7 +92,12 @@ if (/hash/i.test(typedCommand)) {
   const hashSlot = hashData(arg1);
   console.log("Hash number" + hashSlot[0] + "\nTo be placed in array at index " + hashSlot[1]);
   if (retArr[hashSlot[1]]) {
-  retArr[hashSlot[1]].push(arg1);
+    if (hashSlot[1] != arg1) {
+    retArr[hashSlot[1]].push(arg1);
+    }
+    else {
+      console.log("That string already exists in the array.");
+    }
   }
   else {
     retArr[hashSlot[1]] = [arg1];
@@ -86,10 +106,9 @@ if (/hash/i.test(typedCommand)) {
   inquireHash();
 }
 
-if (/lookup/i.test(typedCommand)) {
-  const hashSlot = hashData(arg1);
-  // Put lookup function here after program is switched from arguments to inquirer, to allow lookup in 2d array
-  inquireHash();
-}
+else {
+  console.log("Please enter a valid argument from the following list:\nhash");
+  process.exit(1);
+};
 
-// End hashing function
+// End interactive hashing function
